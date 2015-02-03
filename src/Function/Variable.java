@@ -93,7 +93,7 @@ public enum Variable {
                                 case 'V': return V;
                                 case 'W': return W;
             default: 
-                throw new IllegalArgumentException("Invalid variable.");
+                throw new IllegalArgumentException("Invalid variable " + theVariable);
         }
     }
     

@@ -6,7 +6,10 @@
 package Function;
 
 import Numerics.Inverse;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -51,6 +54,7 @@ public class Polynomial extends Function_Properties {
             
             else if (Character.isLetter(c) && !hasVariable && !hasExponent) {
                 hasVariable = true;
+                System.out.println(c);
                 variable = Variable.getVariable(c);              
             }
             
@@ -146,9 +150,13 @@ public class Polynomial extends Function_Properties {
         else if (variable == null)
             return new Polynomial(buildPolynomial(coefficient, Variable.getVariable('x'), 1));
         
-        else if (exponent == -1)
-            throw new IllegalArgumentException("Logs not yet implemented");
-            //return new Log(FORMAT.format(coefficient) + "log(" + String.valueOf(variable) + ")");
+        else if (exponent == -1) 
+            try {
+                return new Logarithm(FORMAT.format(coefficient) + "log(" + String.valueOf(variable) + ")");
+            } catch (ParseException ex) {
+            Logger.getLogger(Polynomial.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+            }
         
         else {
             final double integratedExponent = exponent + 1;

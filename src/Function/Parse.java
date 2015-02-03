@@ -293,7 +293,6 @@ public class Parse extends Function_Properties {
                     else
                         function = "";
                     
-                    System.out.println(function);
                     /* If three variables equals existing function, set as function */
                     if (function.equals(LOG) || function.equals(SIN)
                         || function.equals(COS) || function.equals(TAN)
@@ -357,7 +356,8 @@ public class Parse extends Function_Properties {
                             + this.getErrorEquation(index), index);
                 
                 /* If it is function and balances match, ends the function */
-                else if (isFunction && (functionParenthesisBalance == parenthesisBalance)) {
+                else if (isFunction && (functionParenthesisBalance == parenthesisBalance)) { 
+                    
                     isFunction = false;
                     parenthesisOperatorList.add(new Parse(equationString.substring(functionParenthesisOpenIndex + 1, index)));
                 }
@@ -507,6 +507,8 @@ public class Parse extends Function_Properties {
                 else if (function.equals(CSC) || function.equals(SEC) 
                         || function.equals(COT))
                     System.err.println("Not implemented yet");
+                
+                hasOperation = false;
                 /*
                 if (function.equals(LOG)
                     || function.equals(SIN) || function.equals(COS)
@@ -528,10 +530,82 @@ public class Parse extends Function_Properties {
         
     }
     
+    public double solveEquation_v3(final ArrayList<Variable> theVariable) throws ParseException {
+        return solveEquation_v2(functionList, operatorList, theVariable);
+    }
+    
+    /**
+     * 
+     * @param funcList ArrayList of different functions (n)
+     * @param opList ArrayList of operations (n-1)
+     * @param theVariable ArrayList of variables to operate with
+     * @return Value of equation
+     * @throws ParseException 
+     * 
+     * Follows PEMDAS by the funcList already containing parenthesis functions and
+     * exponent values. Cycles through funcList and multiplies/divides values
+     * with those operations and stores the values as a Polynomial in a temporary
+     * function list.  If funcList contains an add/subtract it will store that
+     * operation and value in the temporary operation list and the temporary value
+     * list.
+     */
+    public double solveEquation_v2(final ArrayList<Function_Properties> funcList, 
+            final ArrayList<Operator> opList, final ArrayList<Variable> theVariable) 
+            throws ParseException {
+            
+        final ArrayList<Function_Properties> tempFuncList = new ArrayList<>();
+        final ArrayList<Operator> tempOpList = new ArrayList<>(); 
+ 
+        double value;
+        
+        int i = 0;
+        while(i < funcList.size()) {
+            value = getValue(funcList.get(i), theVariable);    
+            System.out.println("value = " + value);
+            while (i < opList.size()) {
+                if(opList.get(i) == Operator.MULTIPLY) { 
+                    value *= getValue(funcList.get(i + 1), theVariable);            
+                    ++i;
+                }
+                else if (opList.get(i) == Operator.DIVIDE) {
+                    value /= getValue(funcList.get(i + 1), theVariable);
+                    ++i;
+                }
+                else {
+                    tempOpList.add(opList.get(i));
+                    tempFuncList.add(new Polynomial(String.valueOf(value)));
+                    ++i;
+                    break;
+                }       
+            }
+            
+            if (i == funcList.size()-1) {
+                if ((opList.get(i-1) == Operator.MULTIPLY) || (opList.get(i-1) == Operator.DIVIDE))
+                    tempFuncList.add(new Polynomial(String.valueOf(value)));
+                else 
+                    tempFuncList.add(new Polynomial(String.valueOf(getValue(funcList.get(i), theVariable))));
+                
+                break;
+            }
+        }
+                    
+        i = 0;
+        value = getValue(tempFuncList.get(i), theVariable);
+        while (i < tempOpList.size()) {
+                if (tempOpList.get(i) == Operator.ADDITION)
+                    value += getValue(tempFuncList.get(i + 1), theVariable);            
+                else 
+                    value -= getValue(tempFuncList.get(i + 1), theVariable);
+                ++i;
+        }
+        
+        return value;
+    }
+    
     public double solveEquation(final ArrayList<Variable> theVariable) throws ParseException {
         
         double MDsum = 0;
-        double sum = getValue(functionList.get(0), theVariable);;
+        double sum = getValue(functionList.get(0), theVariable);
         
         boolean hasMDsum = false;
         

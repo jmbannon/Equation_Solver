@@ -107,6 +107,7 @@ public class Logarithm extends Function_Properties {
     public double value(final ArrayList<Variable> theVariable) {
         try {
             contents.interpretEquation();
+            System.out.println("log returning " + constant*Math.log(contents.solveEquation(theVariable)));
             return constant * Math.log(contents.solveEquation(theVariable));
         } catch (ParseException ex) {
             Logger.getLogger(Logarithm.class.getName()).log(Level.SEVERE, null, ex);

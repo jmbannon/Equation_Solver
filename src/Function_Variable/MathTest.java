@@ -10,6 +10,7 @@ import Function.Operator;
 import Function.Logarithm;
 import static Function.Variable.*;
 import Function.Parse;
+import Function.Polynomial;
 import Function_Trig.Sine;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -35,11 +36,16 @@ public class MathTest {
         test.add(y);
         
 
-        Sine logTest = new Sine("Sin(cos(3.1415))");
-        System.out.println(logTest.toString() +  " = " + logTest.value(test) + " -------------- \n");
         
-        Parse k = new Parse("xSin(" + String.valueOf(Math.PI) + ")");
+        Parse k = new Parse("sin(32)*(3x-7^3*5/3)/3+3");
         k.interpretEquation();
-        System.out.println(k.solveEquation(test));
+        k.printInfo();
+        System.out.println(k.solveEquation_v3(test));
+        
+        Polynomial l = new Polynomial("43x^-1");
+        Parse m = new Parse(l.integrate().toString());
+        m.interpretEquation();
+        System.out.println(m.toString());
+        System.out.println(m.solveEquation_v3(test));
     }
 }
